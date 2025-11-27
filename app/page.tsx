@@ -105,7 +105,7 @@ const testimonials = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white dark:from-slate-950 dark:to-slate-900">
+    <div className="min-h-screen bg-linear-to-b from-amber-50 to-white dark:from-slate-950 dark:to-slate-900">
       {/* Navigation */}
       <nav className="fixed top-0 w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-50 border-b border-amber-100 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -130,13 +130,24 @@ export default function Home() {
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden min-h-[90vh]">
         {/* Calvary Mountain Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Layered gradient sky & glow */}
+          <div className="absolute inset-0 bg-linear-to-b from-amber-100 via-white/70 to-amber-50 dark:from-slate-950 dark:via-slate-900/80 dark:to-slate-950" />
+          <div className="absolute inset-x-[-20%] -top-64 h-[520px] bg-linear-to-r from-amber-200/70 via-rose-200/50 to-sky-200/60 dark:from-amber-500/25 dark:via-rose-500/20 dark:to-sky-500/30 blur-3xl opacity-70" />
+          <div className="absolute inset-x-[-10%] bottom-[-45%] h-[600px] bg-linear-to-t from-amber-200/30 via-amber-100/5 to-transparent dark:from-amber-900/30 dark:via-amber-900/10 blur-3xl" />
+          <div
+            className="absolute inset-0 opacity-70 dark:opacity-40 mix-blend-screen"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 20% 25%, rgba(251,191,36,0.35), transparent 55%), radial-gradient(circle at 75% 10%, rgba(248,250,252,0.8), transparent 50%), radial-gradient(circle at 60% 80%, rgba(251,191,36,0.25), transparent 45%)",
+            }}
+          />
           {/* Sun/Light glow behind cross */}
           <div className="absolute top-[15%] left-1/2 -translate-x-1/2 w-[600px] h-[600px]">
             <div className="absolute inset-0 bg-gradient-radial from-amber-300 via-amber-200 to-transparent rounded-full blur-3xl opacity-50 dark:opacity-25" />
           </div>
           
           {/* Beautiful Calvary Scene SVG */}
-          <svg className="absolute bottom-0 left-0 right-0 w-full h-[450px] sm:h-[500px] md:h-[550px]" viewBox="0 0 1440 550" preserveAspectRatio="xMidYMax slice">
+          <svg className="absolute bottom-0 left-0 right-0 w-full h-[450px] sm:h-[500px] md:h-[550px]" viewBox="0 0 1440 550" preserveAspectRatio="xMidYMax meet">
             <defs>
               {/* Gradients */}
               <linearGradient id="sunGlow" cx="50%" cy="30%" r="50%" fx="50%" fy="30%">
@@ -306,7 +317,7 @@ export default function Home() {
             </div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 dark:text-white leading-tight mb-6">
               Your Complete
-              <span className="block bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-500 bg-clip-text text-transparent">
+              <span className="block bg-linear-to-r from-amber-500 via-amber-600 to-yellow-500 bg-clip-text text-transparent">
                 Christian Songbook
               </span>
             </h1>
@@ -317,7 +328,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <a 
                 href="#download" 
-                className="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 flex items-center justify-center gap-2"
+                className="w-full sm:w-auto bg-linear-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 flex items-center justify-center gap-2"
               >
                 <span>Download Free</span>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -349,7 +360,7 @@ export default function Home() {
               { value: "Free", label: "Forever" },
             ].map((stat, i) => (
               <div key={i} className="text-center">
-                <p className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-amber-500 to-amber-600 bg-clip-text text-transparent">{stat.value}</p>
+                <p className="text-3xl sm:text-4xl font-bold bg-linear-to-r from-amber-500 to-amber-600 bg-clip-text text-transparent">{stat.value}</p>
                 <p className="text-slate-600 dark:text-slate-400 mt-1">{stat.label}</p>
               </div>
             ))}
@@ -374,7 +385,7 @@ export default function Home() {
                 key={i} 
                 className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-slate-700 hover:border-amber-300 dark:hover:border-amber-600 transition-all hover:-translate-y-1"
               >
-                <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center text-white mb-6">
+                <div className="w-14 h-14 bg-linear-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center text-white mb-6">
                   {feature.icon}
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{feature.title}</h3>
@@ -402,7 +413,7 @@ export default function Home() {
                 key={i} 
                 className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-lg hover:shadow-xl transition-all cursor-pointer hover:-translate-y-1"
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-10 transition-opacity`} />
+                <div className={`absolute inset-0 bg-linear-to-br ${category.color} opacity-0 group-hover:opacity-10 transition-opacity`} />
                 <div className="text-4xl mb-4">{category.icon}</div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{category.name}</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">{category.description}</p>
@@ -448,7 +459,7 @@ export default function Home() {
       {/* Download Section */}
       <section id="download" className="py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-gradient-to-br from-amber-500 via-amber-600 to-yellow-600 rounded-3xl p-8 sm:p-12 text-center text-white relative overflow-hidden">
+          <div className="bg-linear-to-br from-amber-500 via-amber-600 to-yellow-600 rounded-3xl p-8 sm:p-12 text-center text-white relative overflow-hidden">
             <div className="absolute inset-0 opacity-30">
               <div className="absolute top-0 left-0 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
               <div className="absolute bottom-0 right-0 w-60 h-60 bg-white/10 rounded-full blur-3xl" />
