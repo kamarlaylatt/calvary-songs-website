@@ -335,15 +335,12 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
               </a>
-              <a 
-                href="#features" 
-                className="w-full sm:w-auto border-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-amber-500 hover:text-amber-600 dark:hover:border-amber-500 dark:hover:text-amber-400 px-8 py-4 rounded-full font-semibold text-lg transition-all flex items-center justify-center gap-2"
-              >
-                <span>Learn More</span>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </a>
+                <a 
+                  href="#features" 
+                  className="w-full sm:w-auto border-2 border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-white px-8 py-4 rounded-full font-semibold text-lg transition-all flex items-center justify-center gap-2"
+                >
+                  <span>Get Started</span>
+                </a>
             </div>
           </div>
         </div>
