@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 // Icon Components
 const SearchIcon = () => (
@@ -326,7 +327,7 @@ export default function Home() {
               Search, browse, and sing along with your favorite spiritual songs anywhere, anytime.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <a 
+              <Link 
                 href="/songs" 
                 className="w-full sm:w-auto bg-linear-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 flex items-center justify-center gap-2"
               >
@@ -334,7 +335,7 @@ export default function Home() {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
-              </a>
+              </Link>
               <a 
                 href="#features" 
                 className="w-full sm:w-auto border-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-amber-500 hover:text-amber-600 dark:hover:border-amber-500 dark:hover:text-amber-400 px-8 py-4 rounded-full font-semibold text-lg transition-all flex items-center justify-center gap-2"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { songs } from "@/lib/data/songs";
@@ -31,14 +31,13 @@ export default function SongDetailPage() {
   const songId = parseInt(params.id as string);
   const song = songs.find((s) => s.id === songId);
 
-  const [isFavorite, setIsFavorite] = useState(false);
-
-  useEffect(() => {
-    if (song) {
+  const [isFavorite, setIsFavorite] = useState(() => {
+    if (typeof window !== "undefined" && song) {
       storageUtils.addRecentlyViewed(song.id);
-      setIsFavorite(storageUtils.isFavorite(song.id));
+      return storageUtils.isFavorite(song.id);
     }
-  }, [song]);
+    return false;
+  });
 
   const toggleFavorite = () => {
     if (song) {
@@ -68,8 +67,24 @@ export default function SongDetailPage() {
   const prevSong = currentIndex > 0 ? songs[currentIndex - 1] : null;
   const nextSong = currentIndex < songs.length - 1 ? songs[currentIndex + 1] : null;
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "MusicComposition",
+    "name": song.title,
+    "genre": song.category,
+    "inLanguage": song.language,
+    "position": song.number,
+    "text": song.lyrics,
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white dark:from-slate-950 dark:to-slate-900">
+      {/* Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-amber-100 dark:border-slate-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

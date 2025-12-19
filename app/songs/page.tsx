@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { songs, categories } from "@/lib/data/songs";
 import { storageUtils } from "@/lib/utils/storage";
@@ -20,13 +20,18 @@ const HeartIcon = ({ filled }: { filled?: boolean }) => (
 export default function SongsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [favorites, setFavorites] = useState<number[]>([]);
-  const [recentlyViewed, setRecentlyViewed] = useState<number[]>([]);
-
-  useEffect(() => {
-    setFavorites(storageUtils.getFavorites());
-    setRecentlyViewed(storageUtils.getRecentlyViewed());
-  }, []);
+  const [favorites, setFavorites] = useState<number[]>(() => {
+    if (typeof window !== "undefined") {
+      return storageUtils.getFavorites();
+    }
+    return [];
+  });
+  const [recentlyViewed, setRecentlyViewed] = useState<number[]>(() => {
+    if (typeof window !== "undefined") {
+      return storageUtils.getRecentlyViewed();
+    }
+    return [];
+  });
 
   const filteredSongs = useMemo(() => {
     return songs.filter((song) => {
@@ -46,14 +51,14 @@ export default function SongsPage() {
   const recentSongs = useMemo(() => {
     return recentlyViewed
       .map((id) => songs.find((s) => s.id === id))
-      .filter(Boolean)
+      .filter((song): song is NonNullable<typeof song> => Boolean(song))
       .slice(0, 5);
   }, [recentlyViewed]);
 
   const favoriteSongs = useMemo(() => {
     return favorites
       .map((id) => songs.find((s) => s.id === id))
-      .filter(Boolean);
+      .filter((song): song is NonNullable<typeof song> => Boolean(song));
   }, [favorites]);
 
   const toggleFavorite = (songId: number) => {
@@ -131,7 +136,7 @@ export default function SongsPage() {
               Recently Viewed
             </h2>
             <div className="grid gap-4">
-              {recentSongs.map((song: any) => (
+              {recentSongs.map((song) => (
                 <Link
                   key={song.id}
                   href={`/songs/${song.id}`}
@@ -172,7 +177,7 @@ export default function SongsPage() {
               Your Favorites
             </h2>
             <div className="grid gap-4">
-              {favoriteSongs.map((song: any) => (
+              {favoriteSongs.map((song) => (
                 <Link
                   key={song.id}
                   href={`/songs/${song.id}`}
