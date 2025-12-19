@@ -4,8 +4,12 @@ export const storageUtils = {
   // Favorites
   getFavorites: (): number[] => {
     if (typeof window === "undefined") return [];
-    const stored = localStorage.getItem("calvary-favorites");
-    return stored ? JSON.parse(stored) : [];
+    try {
+      const stored = localStorage.getItem("calvary-favorites");
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
   },
 
   addFavorite: (songId: number) => {
@@ -29,8 +33,12 @@ export const storageUtils = {
   // Recently Viewed
   getRecentlyViewed: (): number[] => {
     if (typeof window === "undefined") return [];
-    const stored = localStorage.getItem("calvary-recent");
-    return stored ? JSON.parse(stored) : [];
+    try {
+      const stored = localStorage.getItem("calvary-recent");
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
   },
 
   addRecentlyViewed: (songId: number) => {
