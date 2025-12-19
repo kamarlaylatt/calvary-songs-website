@@ -76,6 +76,9 @@ const YouTubeIcon = () => (
 // API base URL
 const API_BASE_URL = "https://api.calvarysong.com/api";
 
+// Constants
+const LYRICS_PREVIEW_LENGTH = 150;
+
 // Helper function to strip HTML tags
 function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
@@ -88,6 +91,7 @@ export default function SongsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [pagination, setPagination] = useState({
     current_page: 1,
     last_page: 1,
@@ -106,6 +110,7 @@ export default function SongsPage() {
   const fetchSongs = useCallback(async (page: number = 1, search: string = "") => {
     if (page === 1) {
       setLoading(true);
+      setError(null);
     } else {
       setLoadingMore(true);
     }
@@ -121,6 +126,11 @@ export default function SongsPage() {
       }
 
       const response = await fetch(`${API_BASE_URL}/songs?${params}`);
+      
+      if (!response.ok) {
+        throw new Error("Failed to load songs");
+      }
+      
       const data: PaginatedResponse = await response.json();
 
       if (page === 1) {
@@ -134,8 +144,11 @@ export default function SongsPage() {
         last_page: data.last_page,
         total: data.total
       });
-    } catch (error) {
-      console.error("Error fetching songs:", error);
+    } catch (err) {
+      console.error("Error fetching songs:", err);
+      if (page === 1) {
+        setError(err instanceof Error ? err.message : "Failed to load songs");
+      }
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -261,6 +274,16 @@ export default function SongsPage() {
             <div className="flex items-center justify-center py-20">
               <div className="animate-spin rounded-full h-12 w-12 border-4 border-amber-500 border-t-transparent"></div>
             </div>
+          ) : error ? (
+            <div className="text-center py-20">
+              <p className="text-red-500 dark:text-red-400 text-lg">{error}</p>
+              <button 
+                onClick={() => fetchSongs(1, debouncedSearch)}
+                className="mt-4 px-6 py-2 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
           ) : songs.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-gray-500 dark:text-gray-400 text-lg">
@@ -319,7 +342,7 @@ export default function SongsPage() {
                     {/* Lyrics Preview */}
                     {song.lyrics && (
                       <p className="mt-3 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-                        {stripHtml(song.lyrics).slice(0, 150)}...
+                        {stripHtml(song.lyrics).slice(0, LYRICS_PREVIEW_LENGTH)}...
                       </p>
                     )}
                   </Link>

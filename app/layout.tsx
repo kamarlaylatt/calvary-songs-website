@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     template: "%s | Calvary Songs"
   },
   description: "Discover thousands of Christian songs, hymns, praise and worship music in one place. Search, browse, and sing along with your favorite spiritual songs anywhere, anytime.",
-  keywords: ["christian songs", "hymns", "worship songs", "praise music", "spiritual songs", "gospel music", "church songs", "calvary songs", "christian hymns", "worship music"],
+  keywords: ["christian songs", "hymns", "worship songs", "praise music", "spiritual songs", "gospel music", "church songs", "calvary songs", "songbook"],
   authors: [{ name: "Calvary Songs" }],
   creator: "Calvary Songs",
   publisher: "Calvary Songs",

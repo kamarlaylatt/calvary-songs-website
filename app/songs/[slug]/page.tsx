@@ -1,8 +1,9 @@
 "use client";
 
+import DOMPurify from "dompurify";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 // Types
 interface Song {
@@ -41,6 +42,15 @@ const MusicNoteIcon = () => (
 // API base URL
 const API_BASE_URL = "https://api.calvarysong.com/api";
 
+// YouTube URL patterns: youtube.com/watch?v=ID, youtube.com/embed/ID, youtu.be/ID
+const YOUTUBE_REGEX = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+
+// Extract YouTube video ID from URL
+function getYouTubeId(url: string): string | null {
+  const match = url.match(YOUTUBE_REGEX);
+  return match ? match[1] : null;
+}
+
 export default function SongDetailPage() {
   const params = useParams();
   const slug = params.slug as string;
@@ -49,6 +59,17 @@ export default function SongDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"lyrics" | "music">("lyrics");
+
+  // Sanitize HTML content to prevent XSS attacks
+  const sanitizedLyrics = useMemo(() => {
+    if (!song?.lyrics) return "";
+    return DOMPurify.sanitize(song.lyrics);
+  }, [song?.lyrics]);
+
+  const sanitizedMusicNotes = useMemo(() => {
+    if (!song?.music_notes) return "";
+    return DOMPurify.sanitize(song.music_notes);
+  }, [song?.music_notes]);
 
   // Fetch song details
   const fetchSong = useCallback(async () => {
@@ -77,12 +98,6 @@ export default function SongDetailPage() {
       fetchSong();
     }
   }, [slug, fetchSong]);
-
-  // Extract YouTube video ID
-  const getYouTubeId = (url: string): string | null => {
-    const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
-    return match ? match[1] : null;
-  };
 
   if (loading) {
     return (
@@ -209,21 +224,21 @@ export default function SongDetailPage() {
 
         {/* Content */}
         <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-6">
-          {activeTab === "lyrics" && song.lyrics && (
+          {activeTab === "lyrics" && sanitizedLyrics && (
             <div 
               className="prose prose-gray dark:prose-invert max-w-none leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: song.lyrics }}
+              dangerouslySetInnerHTML={{ __html: sanitizedLyrics }}
             />
           )}
-          {activeTab === "lyrics" && !song.lyrics && (
+          {activeTab === "lyrics" && !sanitizedLyrics && (
             <p className="text-gray-500 dark:text-gray-400 text-center py-8">
               No lyrics available for this song.
             </p>
           )}
-          {activeTab === "music" && song.music_notes && (
+          {activeTab === "music" && sanitizedMusicNotes && (
             <div 
               className="prose prose-gray dark:prose-invert max-w-none font-mono text-sm leading-relaxed whitespace-pre-wrap"
-              dangerouslySetInnerHTML={{ __html: song.music_notes }}
+              dangerouslySetInnerHTML={{ __html: sanitizedMusicNotes }}
             />
           )}
         </div>
