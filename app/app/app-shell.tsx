@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, Moon, Sun, X, Heart, Info, Settings } from "lucide-react"
+import { Menu, Moon, Sun, X, Heart, Info, Settings, Music } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -12,10 +12,63 @@ type NavItem = {
   href: string
 }
 
+function getIcon(label: string) {
+  switch (label) {
+    case "Songs":
+      return <Music className="h-4 w-4 mr-2 shrink-0" />
+    case "Favorites":
+      return <Heart className="h-4 w-4 mr-2 shrink-0" />
+    case "About":
+      return <Info className="h-4 w-4 mr-2 shrink-0" />
+    case "Settings":
+      return <Settings className="h-4 w-4 mr-2 shrink-0" />
+    default:
+      return null
+  }
+}
+
+function Nav({
+  items,
+  pathname,
+  onNavigate,
+}: {
+  items: NavItem[]
+  pathname: string | null
+  onNavigate?: () => void
+}) {
+  return (
+    <nav className="grid gap-1 px-2 pb-2">
+      {items.map((item) => {
+        const isActive = pathname === item.href
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={onNavigate}
+            aria-current={isActive ? "page" : undefined}
+            className={cn(
+              "flex h-10 items-center rounded-xl px-3 text-sm font-medium transition-colors",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+              "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+              !isActive && "text-muted-foreground",
+              isActive && "bg-sidebar-accent text-sidebar-accent-foreground",
+            )}
+          >
+            {getIcon(item.label)}
+            {item.label}
+          </Link>
+        )
+      })}
+    </nav>
+  )
+}
+
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const [isDark, setIsDark] = useState(true)
+  const [isDark, setIsDark] = useState(() =>
+    typeof document === "undefined" ? true : document.documentElement.classList.contains("dark"),
+  )
 
   const navItems = useMemo<NavItem[]>(
     () => [
@@ -27,54 +80,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     [],
   )
 
-  const getIcon = (label: string) => {
-    switch (label) {
-      case "Favorites":
-        return <Heart className="h-4 w-4 mr-2" />
-      case "About":
-        return <Info className="h-4 w-4 mr-2" />
-      case "Settings":
-        return <Settings className="h-4 w-4 mr-2" />
-      default:
-        return null
-    }
-  }
-
-  useEffect(() => {
-    setIsDark(document.documentElement.classList.contains("dark"))
-  }, [])
-
   function toggleDarkMode() {
     const nextIsDark = !isDark
     setIsDark(nextIsDark)
     document.documentElement.classList.toggle("dark", nextIsDark)
-  }
-
-  function Nav({ onNavigate }: { onNavigate?: () => void }) {
-    return (
-      <nav className="grid gap-1 px-3 py-2">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onNavigate}
-              aria-current={isActive ? "page" : undefined}
-              className={cn(
-                "relative rounded-md px-3 py-2 text-sm font-medium transition-colors flex items-center",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                isActive && "bg-sidebar-accent text-sidebar-accent-foreground",
-              )}
-            >
-              {getIcon(item.label)}
-              {item.label}
-            </Link>
-          )
-        })}
-      </nav>
-    )
   }
 
   return (
@@ -88,7 +97,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         <div className="px-4 pt-4 pb-2 text-xs font-medium text-muted-foreground">Menu</div>
-        <Nav />
+        <Nav items={navItems} pathname={pathname} />
       </aside>
 
       {/* Main area */}
@@ -161,7 +170,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               </button>
             </div>
             <div className="px-4 pt-4 pb-2 text-xs font-medium text-muted-foreground">Menu</div>
-            <Nav onNavigate={() => setDrawerOpen(false)} />
+            <Nav items={navItems} pathname={pathname} onNavigate={() => setDrawerOpen(false)} />
           </div>
         </div>
       ) : null}

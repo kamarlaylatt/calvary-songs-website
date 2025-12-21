@@ -1,9 +1,15 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { ChevronDown, Search, SlidersHorizontal, Video } from "lucide-react"
+import { Search, SlidersHorizontal, Video } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 type Song = {
     id: number
@@ -91,6 +97,8 @@ const SONGS: Song[] = [
 
 type TabKey = "all" | "recent"
 
+const ALL_VALUE = "__all__"
+
 function clampStyle(lines: number) {
     return {
         display: "-webkit-box",
@@ -176,161 +184,104 @@ export default function SongsPage() {
             {/* Search */}
             <div className="relative">
                 <Search className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                <input
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search by title, lyrics, or ID…"
-                    className={cn(
-                        "h-11 w-full rounded-xl border bg-background pl-10 pr-12 text-sm",
-                        "placeholder:text-muted-foreground",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                    )}
-                />
-                <button
-                    type="button"
+                <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by title, lyrics, or ID…" className="pl-10 pr-12" />
+                <Button
+                    variant="outline"
                     aria-label="Filters"
-                    className={cn(
-                        "absolute right-2 top-1/2 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg border bg-background",
-                        "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                    )}
+                    className="absolute right-2 top-1/2 h-9 w-9 -translate-y-1/2 rounded-lg p-0"
                     onClick={() => (filterOpen ? cancelFilters() : openFilters())}
                 >
                     <SlidersHorizontal className="h-5 w-5" />
-                </button>
-
-                {filterOpen ? (
-                    <div className="fixed inset-0 z-30">
-                        <button
-                            type="button"
-                            className="absolute inset-0 bg-background/60 backdrop-blur-sm"
-                            aria-label="Close filters"
-                            onClick={cancelFilters}
-                        />
-
-                        <div className="absolute left-0 right-0 top-24 px-4">
-                            <div className="mx-auto w-full max-w-md rounded-2xl border bg-card p-4 text-card-foreground shadow">
-                                <div className="text-base font-semibold">Category</div>
-                                <div className="mt-2 relative">
-                                    <select
-                                        value={draftCategory}
-                                        onChange={(e) => setDraftCategory(e.target.value)}
-                                        className={cn(
-                                            "h-11 w-full appearance-none rounded-xl border bg-background px-4 pr-10 text-sm",
-                                            "text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                                        )}
-                                    >
-                                        <option value="">All Categories</option>
-                                        {categories.map((c) => (
-                                            <option key={c} value={c}>
-                                                {c}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                </div>
-
-                                <div className="mt-4 text-base font-semibold">Style</div>
-                                <div className="mt-2 relative">
-                                    <select
-                                        value={draftStyle}
-                                        onChange={(e) => setDraftStyle(e.target.value)}
-                                        className={cn(
-                                            "h-11 w-full appearance-none rounded-xl border bg-background px-4 pr-10 text-sm",
-                                            "text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                                        )}
-                                    >
-                                        <option value="">All Styles</option>
-                                        {styles.map((s) => (
-                                            <option key={s} value={s}>
-                                                {s}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                </div>
-
-                                <div className="mt-4 text-base font-semibold">Language</div>
-                                <div className="mt-2 relative">
-                                    <select
-                                        value={draftLanguage}
-                                        onChange={(e) => setDraftLanguage(e.target.value)}
-                                        className={cn(
-                                            "h-11 w-full appearance-none rounded-xl border bg-background px-4 pr-10 text-sm",
-                                            "text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                                        )}
-                                    >
-                                        <option value="">All Languages</option>
-                                        {languages.map((l) => (
-                                            <option key={l} value={l}>
-                                                {l}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                </div>
-
-                                <div className="mt-5 flex items-center justify-end gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={cancelFilters}
-                                        className={cn(
-                                            "inline-flex h-10 items-center justify-center rounded-xl border bg-background px-4 text-sm font-medium",
-                                            "hover:bg-accent hover:text-accent-foreground",
-                                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                                        )}
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={applyFilters}
-                                        className={cn(
-                                            "inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-medium text-primary-foreground",
-                                            "hover:opacity-90",
-                                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                                        )}
-                                    >
-                                        OK
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                ) : null}
+                </Button>
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-6 border-b">
-                <button
-                    type="button"
-                    onClick={() => setTab("all")}
-                    className={cn(
-                        "relative -mb-px pb-3 text-sm font-medium",
-                        tab === "all" ? "text-foreground" : "text-muted-foreground hover:text-foreground",
-                    )}
-                >
-                    All Songs
-                    {tab === "all" ? <span className="absolute inset-x-0 -bottom-px h-0.5 bg-primary" /> : null}
-                </button>
+            <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
+                <TabsList className="w-full justify-start">
+                    <TabsTrigger value="all">All Songs</TabsTrigger>
+                    <TabsTrigger value="recent">Recent (5)</TabsTrigger>
+                </TabsList>
+            </Tabs>
 
-                <button
-                    type="button"
-                    onClick={() => setTab("recent")}
-                    className={cn(
-                        "relative -mb-px pb-3 text-sm font-medium",
-                        tab === "recent" ? "text-foreground" : "text-muted-foreground hover:text-foreground",
-                    )}
-                >
-                    Recent (5)
-                    {tab === "recent" ? <span className="absolute inset-x-0 -bottom-px h-0.5 bg-primary" /> : null}
-                </button>
-            </div>
+            {/* Filter dialog */}
+            <Dialog open={filterOpen} onOpenChange={(open) => (open ? openFilters() : cancelFilters())}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Filters</DialogTitle>
+                    </DialogHeader>
+
+                    <div className="mt-2 space-y-4">
+                        <div className="space-y-2">
+                            <div className="text-sm font-semibold">Category</div>
+                            <Select
+                                value={draftCategory || ALL_VALUE}
+                                onValueChange={(v) => setDraftCategory(v === ALL_VALUE ? "" : v)}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="All Categories" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value={ALL_VALUE}>All Categories</SelectItem>
+                                    {categories.map((c) => (
+                                        <SelectItem key={c} value={c}>
+                                            {c}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <div className="text-sm font-semibold">Style</div>
+                            <Select value={draftStyle || ALL_VALUE} onValueChange={(v) => setDraftStyle(v === ALL_VALUE ? "" : v)}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="All Styles" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value={ALL_VALUE}>All Styles</SelectItem>
+                                    {styles.map((s) => (
+                                        <SelectItem key={s} value={s}>
+                                            {s}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <div className="text-sm font-semibold">Language</div>
+                            <Select
+                                value={draftLanguage || ALL_VALUE}
+                                onValueChange={(v) => setDraftLanguage(v === ALL_VALUE ? "" : v)}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="All Languages" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value={ALL_VALUE}>All Languages</SelectItem>
+                                    {languages.map((l) => (
+                                        <SelectItem key={l} value={l}>
+                                            {l}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="flex items-center justify-end gap-2 pt-1">
+                            <Button variant="outline" onClick={cancelFilters}>
+                                Cancel
+                            </Button>
+                            <Button onClick={applyFilters}>OK</Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
 
             {/* List */}
             <div className="grid gap-3">
                 {visibleSongs.map((song) => (
-                    <article key={song.id} className="rounded-2xl border bg-card p-4 text-card-foreground">
+                    <Card key={song.id} className="p-4">
                         <div className="flex items-start gap-3">
                             <div className="min-w-0 flex-1">
                                 <div className="flex items-start gap-3">
@@ -340,28 +291,19 @@ export default function SongsPage() {
                                     </div>
                                     <div className="ml-auto shrink-0">
                                         {song.videoUrl ? (
-                                            <a
-                                                href={song.videoUrl}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className={cn(
-                                                    "inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1.5 text-sm",
-                                                    "hover:bg-accent hover:text-accent-foreground",
-                                                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                                                )}
-                                            >
-                                                <Video className="h-4 w-4" />
-                                                Video
-                                            </a>
+                                            <Button asChild variant="outline" className="h-9 rounded-full px-3">
+                                                <a href={song.videoUrl} target="_blank" rel="noreferrer">
+                                                    <Video className="h-4 w-4" />
+                                                    Video
+                                                </a>
+                                            </Button>
                                         ) : null}
                                     </div>
                                 </div>
 
                                 <div className="mt-3 flex flex-wrap gap-2">
                                     {song.tags.map((tag) => (
-                                        <span key={tag} className="rounded-full border bg-background px-3 py-1 text-xs text-muted-foreground">
-                                            {tag}
-                                        </span>
+                                        <Badge key={tag}>{tag}</Badge>
                                     ))}
                                 </div>
 
@@ -370,13 +312,11 @@ export default function SongsPage() {
                                 </p>
                             </div>
                         </div>
-                    </article>
+                    </Card>
                 ))}
 
                 {visibleSongs.length === 0 ? (
-                    <div className="rounded-2xl border bg-card p-6 text-center text-sm text-muted-foreground">
-                        No songs match your search.
-                    </div>
+                    <Card className="p-6 text-center text-sm text-muted-foreground">No songs match your search.</Card>
                 ) : null}
             </div>
         </div>
