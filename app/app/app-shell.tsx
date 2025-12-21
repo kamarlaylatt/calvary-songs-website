@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, Moon, Sun, X } from "lucide-react"
+import { Menu, Moon, Sun, X, Heart, Info, Settings } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -20,9 +20,25 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const navItems = useMemo<NavItem[]>(
     () => [
       { label: "Songs", href: "/app/songs" },
+      { label: "Favorites", href: "/app/favorites" },
+      { label: "About", href: "/app/about" },
+      { label: "Settings", href: "/app/settings" },
     ],
     [],
   )
+
+  const getIcon = (label: string) => {
+    switch (label) {
+      case "Favorites":
+        return <Heart className="h-4 w-4 mr-2" />
+      case "About":
+        return <Info className="h-4 w-4 mr-2" />
+      case "Settings":
+        return <Settings className="h-4 w-4 mr-2" />
+      default:
+        return null
+    }
+  }
 
   useEffect(() => {
     setIsDark(document.documentElement.classList.contains("dark"))
@@ -46,12 +62,13 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               onClick={onNavigate}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "relative rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                "relative rounded-md px-3 py-2 text-sm font-medium transition-colors flex items-center",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                 isActive && "bg-sidebar-accent text-sidebar-accent-foreground",
               )}
             >
+              {getIcon(item.label)}
               {item.label}
             </Link>
           )
